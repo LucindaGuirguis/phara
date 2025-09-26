@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaWorld - أدوية عالمية بين يديك</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8a2be2;
+            --secondary: #6a0dad;
+            --accent: #00ffcc;
+            --dark: #121212;
+            --darker: #0a0a0a;
+            --light: #f8fafc;
+            --gray: #2d2d2d;
+            --success: #48bb78;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* أنيميشن الخلفية */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bg-animation span {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: rgba(138, 43, 226, 0.2);
+            border-radius: 50%;
+            animation: animate 15s linear infinite;
+            bottom: -150px;
+        }
+        
+        @keyframes animate {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+                border-radius: 0;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+                border-radius: 50%;
+            }
+        }
+        
+        /* الشريط العلوي */
+        .top-bar {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.8rem 0;
+            text-align: center;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .top-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        /* شريط التنقل */
+        nav {
+            background-color: rgba(18, 18, 18, 0.9);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 0.5rem;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px var(--accent);
+            }
+            to {
+                text-shadow: 0 0 15px var(--primary), 0 0 20px var(--accent);
+            }
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin: 0 1rem;
+            position: relative;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--light);
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        
+        .nav-buttons button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+        
+        .nav-buttons button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.5);
+        }
+        
+        /* محتوى الصفحات */
+        .page-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .page-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        /* قسم البطل */
+        .hero {
+            background: linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.9)), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 8rem 5%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 10%, var(--darker) 90%);
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero h2 {
+            font-size: 3.2rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin: 0 auto 2.5rem;
+            max-width: 700px;
+            animation: fadeInUp 1.2s ease-out;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            animation: fadeInUp 1.4s ease-out;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 2.2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.6);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent);
+            padding: 1rem 2.2rem;
+            border: 2px solid var(--accent);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 255, 204, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 255, 204, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 255, 204, 0.3);
+        }
+        
+        /* قسم المميزات */
+        .features {
+            padding: 6rem 5%;
+            text-align: center;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section-subtitle {
+            color: #a0a0a0;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+            font-size: 1.1rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+        
+        .feature-card {
+            background: linear-gradient(145deg, #1a1a1a, #151515);
+            padding: 2.5rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transition: transform 0.4s, box-shadow 0.4s;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--gray);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+            transition: width 0.4s;
+        }
+        
+        .feature-card:hover::before {
+            width: 100%;
+            opacity: 0.1;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(138, 43, 226, 0.2);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: var(--accent);
+            font-size: 2.2rem;
+            background: rgba(0, 255, 204, 0.1);
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 204, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(0, 255, 204, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 204, 0);
+            }
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 1.2rem;
+            color: var(--light);
+            font-size: 1.4rem;
+        }
+        
+        .feature-card p {
+            color: #b0b0b0;
+            line-height: 1.8;
+        }
+        
+        /* قسم الأدوية */
+        .medicines {
+            padding: 6rem 5%;
+            background: linear-gradient(to bottom, var(--darker), #0f0f0f);
+            position: relative;
+        }
+        
+        .medicines::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--primary), transparent);
+        }
+        
+        .medicines-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+        
+        .view-all {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .view-all i {
+            margin-right: 0.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .view-all:hover {
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
+        }
+        
+        .view-all:hover i {
+            transform: translateX(-5px);
+        }
+        
+        .medicines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+        
+        .medicine-card {
+            background: linear-gradient(145deg, #1a1a1a, #151515);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transition: transform 0.4s, box-shadow 0.4s;
+            border: 1px solid var(--gray);
+        }
+        
+        .medicine-card:hover {
+            transform: translateY(-10px) rotate(1deg);
+            box-shadow: 0 15px 35px rgba(138, 43, 226, 0.3);
+        }
+        
+        .medicine-image {
+            height: 220px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .medicine-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(to top, #151515, transparent);
+        }
+        
+        .medicine-info {
+            padding: 1.8rem;
+        }
+        
+        .medicine-name {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            color: var(--light);
+        }
+        
+        .medicine-desc {
+            color: #a0a0a0;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        
+        .medicine-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .medicine-price {
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+        
+        .add-to-cart {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+        
+        .add-to-cart:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.5);
+        }
+        
+        /* قسم كيفية العمل */
+        .how-it-works {
+            padding: 6rem 5%;
+            text-align: center;
+            background: linear-gradient(to bottom, #0f0f0f, var(--darker));
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 4rem;
+            gap: 2rem;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 250px;
+            padding: 2.5rem 1.5rem;
+            background: linear-gradient(145deg, #1a1a1a, #151515);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--gray);
+            transition: transform 0.3s;
+        }
+        
+        .step:hover {
+            transform: translateY(-5px);
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+        }
+        
+        .step h3 {
+            margin-bottom: 1rem;
+            color: var(--light);
+            font-size: 1.3rem;
+        }
+        
+        .step p {
+            color: #b0b0b0;
+            line-height: 1.7;
+        }
+        
+        /* صفحة الأدوية */
+        .medicines-page {
+            padding: 3rem 5%;
+        }
+        
+        .filters {
+            background: linear-gradient(145deg, #1a1a1a, #151515);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 3rem;
+            border: 1px solid var(--gray);
+        }
+        
+        .filter-title {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+        
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: var(--light);
+        }
+        
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: #1e1e1e;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            color: var(--light);
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        /* صفحة حول الشركة */
+        .about-page {
+            padding: 3rem 5%;
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+        
+        .about-text h2 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+        
+        .about-text p {
+            color: #b0b0b0;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .about-image {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .team-section {
+            margin-top: 5rem;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+        
+        .team-member {
+            background: linear-gradient(145deg, #1a1a1a, #151515);
+            border-radius: 15px;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s;
+            border: 1px solid var(--gray);
+        }
+        
+        .team-member:hover {
+            transform: translateY(-10px);
+        }
+        
+        .team-member img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .team-info {
+            padding: 1.5rem;
+        }
+        
+        .team-info h3 {
+            color: var(--light);
+            margin-bottom: 0.5rem;
+        }
+        
+        .team-info p {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        
+        /* صفحة الاتصال */
+        .contact-page {
+            padding: 3rem 5%;
+        }
+        
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+        
+        .contact-info {
+            background: linear-gradient(145deg, #1a1a1a, #151515);
+            padding: 2.5rem;
+            border-radius: 15px;
+            border: 1px solid var(--gray);
+        }
+        
+        .contact-info h2 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .contact-details {
+            list-style: none;
+        }
+        
+        .contact-details li {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-details i {
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin-left: 1rem;
+            width: 20px;
+        }
+        
+        .contact-form {
+            background: linear-gradient(145deg, #1a1a1a, #151515);
+            padding: 2.5rem;
+            border-radius: 15px;
+            border: 1px solid var(--gray);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: var(--light);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            background: #1e1e1e;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 255, 204, 0.2);
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+            display: inline-block;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.6);
+        }
+        
+        /* التذييل */
+        footer {
+            background: linear-gradient(to top, #0a0a0a, #050505);
+            color: white;
+            padding: 4rem 5% 2rem;
+            border-top: 1px solid var(--gray);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            color: var(--accent);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(to right, var(--accent), transparent);
+            bottom: -8px;
+            right: 0;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(-5px);
+        }
+        
+        .footer-links i {
+            margin-left: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(145deg, #1a1a1a, #151515);
+            color: var(--accent);
+            border-radius: 50%;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .social-icons a:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray);
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        /* تأثيرات الظهور */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* تصميم متجاوب */
+        @media (max-width: 992px) {
+            .hero h2 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .steps {
+                flex-direction: column;
+            }
+            
+            .about-content, .contact-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .contact-form {
+                padding: 2rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero {
+                padding: 5rem 5%;
+            }
+            
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+            
+            .feature-card, .medicine-card, .step {
+                min-width: 100%;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- أنيميشن الخلفية -->
+    <div class="bg-animation">
+        <span style="--i:11;"></span>
+        <span style="--i:12;"></span>
+        <span style="--i:24;"></span>
+        <span style="--i:10;"></span>
+        <span style="--i:14;"></span>
+        <span style="--i:23;"></span>
+        <span style="--i:18;"></span>
+        <span style="--i:16;"></span>
+        <span style="--i:19;"></span>
+        <span style="--i:20;"></span>
+        <span style="--i:22;"></span>
+        <span style="--i:25;"></span>
+        <span style="--i:18;"></span>
+        <span style="--i:21;"></span>
+        <span style="--i:15;"></span>
+        <span style="--i:13;"></span>
+        <span style="--i:26;"></span>
+        <span style="--i:17;"></span>
+        <span style="--i:13;"></span>
+        <span style="--i:28;"></span>
+    </div>
+    
+    <!-- الشريط العلوي -->
+    <div class="top-bar">
+        <p>Welcome in our web !</p>
+    </div>
+    
+    <!-- شريط التنقل -->
+    <nav>
+        <div class="logo">
+            <h1>Pharma<span>Global</span></h1>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="#" class="nav-link" data-page="home">Home</a></li>
+            <li><a href="#" class="nav-link" data-page="medicines">Medications</a></li>
+            <li><a href="#" class="nav-link" data-page="about">About</a></li>
+            <li><a href="#" class="nav-link" data-page="contact">Contact us</a></li>
+        </ul>
+        
+        <div class="nav-buttons">
+            <button>Login in </button>
+        </div>
+    </nav>
+    
+    <!-- الصفحة الرئيسية -->
+    <div id="home" class="page-content active">
+        <!-- قسم البطل -->
+        <section class="hero">
+            <div class="hero-content">
+                <h2>أدوية عالمية غير متوفرة في بلدك، الآن بين يديك</h2>
+                <p>نوفر لك أحدث الأدوية والعلاجات التي قد لا تكون متاحة في منطقتك، بجودة مضمونة وخدمة توصيل سريعة وآمنة</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary">استعرض الأدوية</button>
+                    <button class="btn-secondary">تعرف على المزيد</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- قسم المميزات -->
+        <section class="features">
+            <h2 class="section-title">لماذا تختار PharmaGlobal؟</h2>
+            <p class="section-subtitle">نحن نقدم حلاً شاملاً للحصول على الأدوية النادرة عالميًا بكل سهولة وأمان</p>
+            
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <h3>أدوية نادرة</h3>
+                    <p>نوفر أدوية غير متوفرة في العديد من البلدان من خلال شراكات حصرية مع شركات الأدوية العالمية</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>جودة مضمونة</h3>
+                    <p>جميع أدويتنا أصلية ومرخصة ومعتمدة من هيئات الدواء العالمية، مع ضمان الجودة والسلامة</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h3>شحن سريع</h3>
+                    <p>خدمة شحن سريعة وآمنة حول العالم مع تتبع الطلبات وضمان وصولها في حالة مثالية</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- قسم الأدوية -->
+        <section class="medicines">
+            <div class="medicines-header">
+                <h2 class="section-title">أدويتنا الأكثر طلباً</h2>
+                <a href="#" class="view-all nav-link" data-page="medicines">عرض الكل <i class="fas fa-arrow-left"></i></a>
+            </div>
+            
+            <div class="medicines-grid">
+                <div class="medicine-card animate-on-scroll">
+                    <div class="medicine-image" style="background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="medicine-info">
+                        <h3 class="medicine-name">دواء Neurovix</h3>
+                        <p class="medicine-desc">لعلاج الأمراض العصبية النادرة، غير متوفر في معظم دول الشرق الأوسط</p>
+                        <div class="medicine-meta">
+                            <span class="medicine-price">450 ر.س</span>
+                            <button class="add-to-cart">إضافة إلى السلة</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="medicine-card animate-on-scroll">
+                    <div class="medicine-image" style="background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="medicine-info">
+                        <h3 class="medicine-name">دواء CardioPlus</h3>
+                        <p class="medicine-desc">أحدث علاج لأمراض القلب الوراثية، متوفر في عدد محدود من الدول</p>
+                        <div class="medicine-meta">
+                            <span class="medicine-price">380 ر.س</span>
+                            <button class="add-to-cart">إضافة إلى السلة</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="medicine-card animate-on-scroll">
+                    <div class="medicine-image" style="background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="medicine-info">
+                        <h3 class="medicine-name">دواء ImmunoMax</h3>
+                        <p class="medicine-desc">علاج متطور لأمراض المناعة الذاتية، حصري لعدد محدود من الصيدليات العالمية</p>
+                        <div class="medicine-meta">
+                            <span class="medicine-price">520 ر.س</span>
+                            <button class="add-to-cart">إضافة إلى السلة</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- قسم كيفية العمل -->
+        <section class="how-it-works">
+            <h2 class="section-title">كيفية طلب الأدوية</h2>
+            <p class="section-subtitle">عملية بسيطة من ثلاث خطوات للحصول على أدويتك بكل سهولة وأمان</p>
+            
+            <div class="steps">
+                <div class="step animate-on-scroll">
+                    <div class="step-number">1</div>
+                    <h3>اختر دواءك</h3>
+                    <p>تصفح قائمة الأدوية المتاحة واختر ما يناسب حالتك الصحية بعد استشارة الطبيب</p>
+                </div>
+                
+                <div class="step animate-on-scroll">
+                    <div class="step-number">2</div>
+                    <h3>أكمل الطلب</h3>
+                    <p>أضف الأدوية إلى سلة التسوق وأكمل عملية الدفع عبر بوابة الدفع الآمنة</p>
+                </div>
+                
+                <div class="step animate-on-scroll">
+                    <div class="step-number">3</div>
+                    <h3>استلم شحنتك</h3>
+                    <p>استلم طلبك في خلال 5-7 أيام عمل مع إمكانية التتبع الكامل للشحنة</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- صفحة الأدوية -->
+    <div id="medicines" class="page-content">
+        <section class="medicines-page">
+            <h2 class="section-title">قائمة الأدوية المتاحة</h2>
+            <p class="section-subtitle">تصفح قائمة الأدوية النادرة المتوفرة لدينا حول العالم</p>
+            
+            <div class="filters">
+                <h3 class="filter-title">تصفية النتائج</h3>
+                <div class="filter-group">
+                    <label for="category">التصنيف</label>
+                    <select id="category">
+                        <option value="">جميع التصنيفات</option>
+                        <option value="nervous">الجهاز العصبي</option>
+                        <option value="heart">أمراض القلب</option>
+                        <option value="immune">المناعة</option>
+                        <option value="cancer">السرطان</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="price">نطاق السعر</label>
+                    <select id="price">
+                        <option value="">جميع الأسعار</option>
+                        <option value="0-300">حتى 300 ر.س</option>
+                        <option value="300-500">300 - 500 ر.س</option>
+                        <option value="500-1000">500 - 1000 ر.س</option>
+                        <option value="1000+">أكثر من 1000 ر.س</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="availability">التوفر</label>
+                    <select id="availability">
+                        <option value="">جميع المنتجات</option>
+                        <option value="in-stock">متوفر حالياً</option>
+                        <option value="pre-order">للطلب المسبق</option>
+                    </select>
+                </div>
+                
+                <div class="filter-buttons">
+                    <button class="btn-primary">تطبيق الفلتر</button>
+                    <button class="btn-secondary">إعادة التعيين</button>
+                </div>
+            </div>
+            
+            <div class="medicines-grid">
+                <div class="medicine-card animate-on-scroll">
+                    <div class="medicine-image" style="background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="medicine-info">
+                        <h3 class="medicine-name">دواء Neurovix</h3>
+                        <p class="medicine-desc">لعلاج الأمراض العصبية النادرة، غير متوفر في معظم دول الشرق الأوسط</p>
+                        <div class="medicine-meta">
+                            <span class="medicine-price">450 ر.س</span>
+                            <button class="add-to-cart">إضافة إلى السلة</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="medicine-card animate-on-scroll">
+                    <div class="medicine-image" style="background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="medicine-info">
+                        <h3 class="medicine-name">دواء CardioPlus</h3>
+                        <p class="medicine-desc">أحدث علاج لأمراض القلب الوراثية، متوفر في عدد محدود من الدول</p>
+                        <div class="medicine-meta">
+                            <span class="medicine-price">380 ر.س</span>
+                            <button class="add-to-cart">إضافة إلى السلة</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="medicine-card animate-on-scroll">
+                    <div class="medicine-image" style="background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="medicine-info">
+                        <h3 class="medicine-name">دواء ImmunoMax</h3>
+                        <p class="medicine-desc">علاج متطور لأمراض المناعة الذاتية، حصري لعدد محدود من الصيدليات العالمية</p>
+                        <div class="medicine-meta">
+                            <span class="medicine-price">520 ر.س</span>
+                            <button class="add-to-cart">إضافة إلى السلة</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="medicine-card animate-on-scroll">
+                    <div class="medicine-image" style="background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="medicine-info">
+                        <h3 class="medicine-name">دواء OncoTreat</h3>
+                        <p class="medicine-desc">علاج مبتكر لأنواع محددة من السرطانات، متوفر في أوروبا والولايات المتحدة فقط</p>
+                        <div class="medicine-meta">
+                            <span class="medicine-price">780 ر.س</span>
+                            <button class="add-to-cart">إضافة إلى السلة</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="medicine-card animate-on-scroll">
+                    <div class="medicine-image" style="background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="medicine-info">
+                        <h3 class="medicine-name">دواء DermaHeal</h3>
+                        <p class="medicine-desc">علاج لأمراض الجلد النادرة، حصري لليابان وكوريا الجنوبية</p>
+                        <div class="medicine-meta">
+                            <span class="medicine-price">320 ر.س</span>
+                            <button class="add-to-cart">إضافة إلى السلة</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="medicine-card animate-on-scroll">
+                    <div class="medicine-image" style="background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80');"></div>
+                    <div class="medicine-info">
+                        <h3 class="medicine-name">دواء GastroRelief</h3>
+                        <p class="medicine-desc">علاج متقدم لأمراض الجهاز الهضمي المعقدة، غير متوفر في المنطقة العربية</p>
+                        <div class="medicine-meta">
+                            <span class="medicine-price">410 ر.س</span>
+                            <button class="add-to-cart">إضافة إلى السلة</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- صفحة عن الشركة -->
+    <div id="about" class="page-content">
+        <section class="about-page">
+            <h2 class="section-title">عن PharmaGlobal</h2>
+            <p class="section-subtitle">رسالتنا هي توفير الأدوية النادرة والمنقذة للحياة للمرضى حول العالم</p>
+            
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>من نحن</h2>
+                    <p>PharmaGlobal هي منصة رائدة في مجال توفير الأدوية النادرة عالميًا. تأسست في عام 2015 بهدف سد الفجوة بين المرضى والأدوية غير المتوفرة في بلدانهم.</p>
+                    <p>نعمل مع شبكة واسعة من شركات الأدوية العالمية والموردين الموثوقين لتوفير أحدث العلاجات الطبية للمرضى في جميع أنحاء العالم.</p>
+                    <p>نفخر بأننا ساعدنا أكثر من 50,000 مريض في الحصول على الأدوية التي يحتاجونها لعلاج أمراضهم وتحسين جودة حياتهم.</p>
+                    <button class="btn-primary">اتصل بنا</button>
+                </div>
+                
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="عن PharmaGlobal">
+                </div>
+            </div>
+            
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1576671414121-aa0c81c830fe?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="رؤيتنا">
+                </div>
+                
+                <div class="about-text">
+                    <h2>رؤيتنا ورسالتنا</h2>
+                    <p>رؤيتنا هي خلق عالم where no patient suffers due to unavailability of essential medicines.</p>
+                    <p>رسالتنا هي توفير وصول سهل وآمن للأدوية النادرة والمنقذة للحياة للمرضى في جميع أنحاء العالم، بغض النظر عن موقعهم الجغرافي.</p>
+                    <p>نلتزم بأعلى معايير الجودة والسلامة، ونتعاون مع الهيئات التنظيمية الدولية لضمان توافق جميع أدويتنا مع المعايير العالمية.</p>
+                    <button class="btn-primary">تعرف على المزيد</button>
+                </div>
+            </div>
+            
+            <div class="team-section">
+                <h2 class="section-title">فريقنا</h2>
+                <p class="section-subtitle">خبراء طبيون وصيادلة متميزون يعملون لخدمتكم</p>
+                
+                <div class="team-grid">
+                    <div class="team-member animate-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="د. أحمد السيد">
+                        <div class="team-info">
+                            <h3>د. أحمد السيد</h3>
+                            <p>استشاري الأمراض الباطنية</p>
+                            <p>خبرة 15 عاماً في مجال الأدوية النادرة</p>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member animate-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="د. سارة محمد">
+                        <div class="team-info">
+                            <h3>د. سارة محمد</h3>
+                            <p>صيدلانية إكلينيكية</p>
+                            <p>متخصصة في الأدوية البيولوجية والنادرة</p>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member animate-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="د. خالد أمين">
+                        <div class="team-info">
+                            <h3>د. خالد أمين</h3>
+                            <p>استشاري علم الأدوية</p>
+                            <p>خبير في تسجيل الأدوية واللوائح التنظيمية</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- صفحة الاتصال -->
+    <div id="contact" class="page-content">
+        <section class="contact-page">
+            <h2 class="section-title">اتصل بنا</h2>
+            <p class="section-subtitle">يسعدنا تواصلكم معنا لاستفساراتكم وأسئلتكم</p>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h2>معلومات التواصل</h2>
+                    <ul class="contact-details">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>سوهاج</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <span>+966123456789</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>info@pharmaglobal.com</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-clock"></i>
+                            <span>الأحد - الخميس: 8ص - 10م</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <h2>أرسل رسالة</h2>
+                    <form>
+                        <div class="form-group">
+                            <label for="name">الاسم الكامل</label>
+                            <input type="text" id="name" placeholder="أدخل اسمك الكامل" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">البريد الإلكتروني</label>
+                            <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject">الموضوع</label>
+                            <select id="subject" required>
+                                <option value="">اختر موضوع الاستفسار</option>
+                                <option value="medicine">استفسار عن دواء</option>
+                                <option value="order">متابعة طلب</option>
+                                <option value="consultation">استشارة طبية</option>
+                                <option value="other">استفسار آخر</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">الرسالة</label>
+                            <textarea id="message" placeholder="أدخل رسالتك هنا" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">إرسال الرسالة</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- التذييل -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>عن PharmaGlobal</h3>
+                <p>منصة رائدة في توفير الأدوية النادرة عالميًا، نعمل على توصيل أحدث العلاجات الطبية إلى من يحتاجها في جميع أنحاء العالم.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>روابط سريعة</h3>
+                <ul class="footer-links">
+                    <li><a href="#" class="nav-link" data-page="home"><i class="fas fa-arrow-left"></i> الرئيسية</a></li>
+                    <li><a href="#" class="nav-link" data-page="medicines"><i class="fas fa-arrow-left"></i> جميع الأدوية</a></li>
+                    <li><a href="#" class="nav-link" data-page="about"><i class="fas fa-arrow-left"></i> عن الشركة</a></li>
+                    <li><a href="#" class="nav-link" data-page="contact"><i class="fas fa-arrow-left"></i> اتصل بنا</a></li>
+                    <li><a href="#"><i class="fas fa-arrow-left"></i> سياسة الخصوصية</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>وسائل التواصل</h3>
+                <ul class="footer-links">
+                    <li><i class="fas fa-map-marker-alt"></i> الرياض، المملكة العربية السعودية</li>
+                    <li><i class="fas fa-phone"></i> 966123456789+</li>
+                    <li><i class="fas fa-envelope"></i> info@pharmaglobal.com</li>
+                    <li><i class="fas fa-clock"></i> الأحد - الخميس: 8ص - 10م</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>© 2023 PharmaGlobal. جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+
+    <script>
+        // أنيميشن الظهور عند التمرير
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            animatedElements.forEach(element => {
+                observer.observe(element);
+            });
+            
+            // إنشاء عناصر أنيميشن الخلفية الديناميكية
+            const bgAnimation = document.querySelector('.bg-animation');
+            for (let i = 0; i < 20; i++) {
+                const span = document.createElement('span');
+                span.style.setProperty('--i', Math.floor(Math.random() * 30) + 1);
+                span.style.left = Math.random() * 100 + 'vw';
+                span.style.animationDelay = Math.random() * 5 + 's';
+                span.style.animationDuration = Math.floor(Math.random() * 10) + 10 + 's';
+                bgAnimation.appendChild(span);
+            }
+            
+            // التنقل بين الصفحات
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pageContents = document.querySelectorAll('.page-content');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetPage = this.getAttribute('data-page');
+                    
+                    // إخفاء جميع الصفحات
+                    pageContents.forEach(page => {
+                        page.classList.remove('active');
+                    });
+                    
+                    // إظهار الصفحة المطلوبة
+                    document.getElementById(targetPage).classList.add('active');
+                    
+                    // التمرير إلى أعلى الصفحة
+                    window.scrollTo(0, 0);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
